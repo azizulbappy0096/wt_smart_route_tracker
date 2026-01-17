@@ -1,13 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Route Tracker - Real-Time Train Tracking</title>
-  <link rel="stylesheet" href="/assets/css/main.css">
+<?php
+$metadata = [
+    'title' => 'Smart Route Tracker - Real-Time Train Tracking',
+    'styles' => ['/assets/css/home.css'],
+];
+include_once __DIR__ . '/../layouts/general/header.php';
+?>
 
-</head>
-<body class="hero-gradient">
+<main class="hero-gradient">
   <header class="bg-white shadow-sm">
     <div class="container container--max-7xl py-4 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2">
@@ -98,5 +97,7 @@
       <p class="text-center text-gray-600">© 2026 Smart Route Tracker. All rights reserved.</p>
     </div>
   </footer>
-</body>
-</html>
+</main>
+
+<?php include_once __DIR__ . '/../layouts/general/footer.php';
+?>
