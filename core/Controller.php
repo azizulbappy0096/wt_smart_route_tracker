@@ -4,13 +4,14 @@
  */
 class Controller
 {
+    private $requestUri;
 
-    function __construct()
+    function __construct($requestUri)
     {
-
+        $this->requestUri = $requestUri;
     }
 
-    public function loadView($name = '', $arg = array())
+    public function loadView($name = '', $arg = [])
     {
         $path = BASE_PATH . "/app/views/pages/{$name}";
         // $data = array();
@@ -19,9 +20,9 @@ class Controller
         //     $data[$key] = $value;
         // }
         extract($arg);
-
+        extract(['requestUri' => $this->requestUri]);
         ob_start();
-        include($path);
+        include $path;
         $content = ob_get_contents();
         ob_end_clean();
 

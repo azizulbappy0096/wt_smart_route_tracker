@@ -3,7 +3,7 @@ $metadata = [
     'title' => 'Login - Smart Route Tracker',
     'styles' => ['/assets/css/auth.css'],
 ];
-include_once __DIR__ . '/../layouts/general/header.php';
+include_once BASE_PATH . '/app/views/layouts/general/header.php';
 ?>
 
 <main class="page-auth">
@@ -65,4 +65,4 @@ include_once __DIR__ . '/../layouts/general/header.php';
   </div>
 </main>
 
-<?php include_once __DIR__ . '/../layouts/general/footer.php'; ?>
+<?php include_once BASE_PATH . '/app/views/layouts/general/footer.php'; ?>

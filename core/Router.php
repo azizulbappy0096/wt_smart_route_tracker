@@ -13,7 +13,8 @@ class Router
             $method = routes[$request][1];
             if (file_exists(BASE_PATH . '/app/controllers/' . $controller . '.php')) {
                 require BASE_PATH . '/app/controllers/' . $controller . '.php';
-                $class = new $controller();
+                $controller = explode('/', $controller)[count(explode('/', $controller)) - 1];
+                $class = new $controller($request);
                 if (method_exists($controller, $method)) {
                     $class->$method();
                     exit();

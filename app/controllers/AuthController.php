@@ -20,6 +20,6 @@ class AuthController extends Controller
 
     public function forgotPasswordView()
     {
-        $this->loadView('forgot-password.php');
+        $this->loadView('forgot_password.php');
     }
 }
