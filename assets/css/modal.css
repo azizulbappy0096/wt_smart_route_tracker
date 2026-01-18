@@ -1,0 +1,334 @@
+.dialog-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 200ms ease-in-out;
+}
+
+.dialog-overlay--active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.dialog {
+    position: relative;
+    background-color: white;
+    border-radius: var(--radius);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-height: 90vh;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 32rem;
+    transform: scale(0.95);
+    transition: transform 200ms ease-in-out;
+}
+
+.dialog-overlay--active .dialog {
+    transform: scale(1);
+}
+
+.dialog--large {
+    max-width: 56rem;
+}
+
+.dialog--xlarge {
+    max-width: 64rem;
+}
+
+.dialog__header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.dialog__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.dialog__description {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    line-height: 1.25rem;
+}
+
+.dialog__content {
+    padding: 1.5rem;
+}
+
+.dialog__footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.dialog__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    opacity: 0.7;
+    transition: opacity 150ms;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.dialog__close:hover {
+    opacity: 1;
+    background-color: var(--accent);
+}
+
+.dialog__close svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group__label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.form-section {
+    margin-bottom: 1.5rem;
+}
+
+.form-section__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.input-group {
+    position: relative;
+    width: 100%;
+}
+
+.input-group__icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1rem;
+    height: 1rem;
+    color: var(--gray-400);
+    pointer-events: none;
+}
+
+.route-builder {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.route-builder__station {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background-color: var(--gray-50);
+    border-radius: var(--radius);
+}
+
+.route-builder__station-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: var(--blue-600);
+    color: white;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.route-builder__station-info {
+    flex: 1;
+}
+
+.route-builder__station-name {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.route-builder__station-details {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+.route-builder__remove {
+    flex-shrink: 0;
+    padding: 0.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-400);
+    transition: color 150ms;
+}
+
+.route-builder__remove:hover {
+    color: var(--red-600);
+}
+
+.route-preview {
+    max-height: 16rem;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+}
+
+.route-preview__stop {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background-color: var(--gray-50);
+    border-radius: var(--radius);
+    margin-bottom: 0.5rem;
+}
+
+.route-preview__stop:last-child {
+    margin-bottom: 0;
+}
+
+.route-preview__marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.route-preview__dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 9999px;
+    flex-shrink: 0;
+}
+
+.route-preview__dot--start {
+    background-color: var(--green-600);
+}
+
+.route-preview__dot--end {
+    background-color: var(--red-600);
+}
+
+.route-preview__dot--intermediate {
+    background-color: var(--blue-600);
+}
+
+.route-preview__line {
+    width: 2px;
+    height: 2rem;
+    background-color: var(--gray-300);
+    margin-top: 0.25rem;
+}
+
+.route-preview__info {
+    flex: 1;
+}
+
+.route-preview__station-name {
+    font-weight: 500;
+    margin-bottom: 0.125rem;
+}
+
+.route-preview__station-details {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+.route-preview__times {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.route-preview__time {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.route-preview__time--secondary {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.route-summary {
+    padding: 0.75rem;
+    background-color: var(--blue-50);
+    border-radius: var(--radius);
+    margin-top: 1rem;
+}
+
+.route-summary__text {
+    font-size: 0.875rem;
+    color: var(--blue-900);
+}
+
+.selected-stations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.station-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    background-color: var(--secondary);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+}
+
+.station-chip__remove {
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-400);
+    transition: color 150ms;
+    display: flex;
+    align-items: center;
+}
+
+.station-chip__remove:hover {
+    color: var(--red-600);
+}
+
+@media (max-width: 640px) {
+    .dialog {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+
+    .dialog__header,
+    .dialog__content,
+    .dialog__footer {
+        padding: 1rem;
+    }
+}
