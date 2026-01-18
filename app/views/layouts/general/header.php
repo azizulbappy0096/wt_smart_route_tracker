@@ -12,6 +12,6 @@
           echo '<link rel="stylesheet" href="' . htmlspecialchars($cssFile) . '">' . "\n";
       }
   } ?>
-  
+  <script src="/assets/js/utils.js"></script>
 </head>
 <body>

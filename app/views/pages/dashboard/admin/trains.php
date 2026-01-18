@@ -912,6 +912,5 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
     </div>
 </div>
 
-<script src="/assets/js/utils.js"></script>
-<script src="/assets/js/admin/trains.js"></script>
+<script src="/assets/js/dashboard/admin/trains.js"></script>
 <?php include_once BASE_PATH . '/app/views/layouts/dashboard/footer.php'; ?>

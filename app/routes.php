@@ -8,6 +8,7 @@ const routes = [
     '/login' => ['AuthController', 'loginView'],
     '/register' => ['AuthController', 'registerView'],
     '/forgot-password' => ['AuthController', 'forgotPasswordView'],
+    '/dashboard/profile' => ['dashboard/ProfileController', 'index'],
     // dashboard routes --> general
     '/dashboard' => ['dashboard/GeneralController', 'searchTrainsView'],
     '/dashboard/tracking' => ['dashboard/GeneralController', 'trackingView'],
