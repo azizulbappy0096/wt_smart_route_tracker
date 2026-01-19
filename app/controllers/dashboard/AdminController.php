@@ -1,6 +1,7 @@
 <?php
 
 require_once BASE_PATH . '/core/Controller.php';
+require_once BASE_PATH . '/app/models/TrainModel.php';
 
 class AdminController extends Controller
 {
@@ -13,7 +14,11 @@ class AdminController extends Controller
 
     public function adminPanelView()
     {
-        $this->loadView('dashboard/admin/monitor.php');
+        $trainModel = new TrainModel();
+        $result = $trainModel->analytics();
+        $analytics = $result['data'] ?? [];
+
+        $this->loadView('dashboard/admin/monitor.php', ['analytics' => $analytics]);
     }
     public function manageTrainsView()
     {

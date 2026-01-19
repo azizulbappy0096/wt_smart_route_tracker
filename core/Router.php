@@ -9,7 +9,7 @@ class Router
 
     public function __construct()
     {
-        $this->request = trim($_SERVER['REQUEST_URI']);
+        $this->request = parse_url(trim($_SERVER['REQUEST_URI']), PHP_URL_PATH);
         $this->requestMethod = $_SERVER['REQUEST_METHOD'];
     }
 
@@ -99,7 +99,14 @@ class Router
             }
         }
 
-        $this->jsonResponse(false, 'Not found', 404);
+        header('Content-Type: application/json');
+        http_response_code(404);
+        $response = [
+            'success' => false,
+            'status' => 404,
+            'message' => 'API endpoint not found.',
+        ];
+        echo json_encode($response);
     }
 
     private function checkMethod($allowedMethod)

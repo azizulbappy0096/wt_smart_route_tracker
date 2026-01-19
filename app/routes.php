@@ -17,8 +17,8 @@ const routes = [
     '/dashboard/notifications' => ['dashboard/GeneralController', 'notificationsView'],
     // dashboard routes --> admin
     '/dashboard/admin' => ['dashboard/AdminController', 'adminPanelView'],
-    '/dashboard/admin/trains' => ['dashboard/AdminController', 'manageTrainsView'],
-    '/dashboard/admin/stations' => ['dashboard/AdminController', 'manageStationsView'],
+    '/dashboard/admin/trains' => ['TrainController', 'index'],
+    '/dashboard/admin/stations' => ['StationController', 'index'],
     '/dashboard/admin/users' => ['dashboard/AdminController', 'manageUsersView'],
     '/dashboard/admin/reports' => ['dashboard/AdminController', 'manageReportsView'],
 ];
@@ -27,4 +27,14 @@ const apiRoutes = [
     '/api/auth/register' => ['AuthApiController', 'register', 'post'],
     '/api/auth/login' => ['AuthApiController', 'login', 'post'],
     '/api/auth/logout' => ['AuthApiController', 'logout', 'get'],
+    // stations
+    '/api/stations' => ['StationApiController', 'getAllStations', 'get'],
+    '/api/stations/add' => ['StationApiController', 'addStation', 'post'],
+    '/api/stations/update' => ['StationApiController', 'updateStation', 'put'],
+    '/api/stations/delete' => ['StationApiController', 'deleteStation', 'delete'],
+    // trains
+    '/api/trains/add' => ['TrainApiController', 'addTrain', 'post'],
+    '/api/trains/update' => ['TrainApiController', 'updateTrain', 'put'],
+    '/api/trains/delete' => ['TrainApiController', 'deleteTrain', 'delete'],
+    '/api/trains/status' => ['TrainApiController', 'updateTrainStatus', 'put'],
 ];

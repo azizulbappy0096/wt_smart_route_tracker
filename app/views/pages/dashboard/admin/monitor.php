@@ -1,6 +1,13 @@
 <?php
 $metadata['title'] = 'Admin Dashboard - Monitor | Smart Route Tracker';
 include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
+
+$badgeClasses = [
+    'on-time' => 'badge--success',
+    'delayed' => 'badge--warning',
+    'cancelled' => 'badge--error',
+    'stopped' => 'badge--info',
+];
 ?>
 
 <main class="dashboard-main">
@@ -11,7 +18,9 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Active Trains</p>
-                            <p class="text-3xl font-bold mt-1" id="activeTrains">0</p>
+                            <p class="text-3xl font-bold mt-1" id="activeTrains"><?php echo $analytics[
+                                'stats'
+                            ]['active_trains'] ?? 0; ?></p>
                         </div>
                         <div class="bg-blue-100 p-3 rounded-lg">
                             <svg
@@ -37,7 +46,9 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Delayed Trains</p>
-                            <p class="text-3xl font-bold mt-1" id="delayedTrains">0</p>
+                            <p class="text-3xl font-bold mt-1" id="delayedTrains"><?php echo $analytics[
+                                'stats'
+                            ]['delayed_trains'] ?? 0; ?></p>
                         </div>
                         <div class="bg-yellow-100 p-3 rounded-lg">
                             <svg
@@ -89,7 +100,9 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Avg Speed</p>
-                            <p class="text-3xl font-bold mt-1" id="avgSpeed">0</p>
+                            <p class="text-3xl font-bold mt-1" id="avgSpeed"><?php echo $analytics[
+                                'stats'
+                            ]['avg_speed'] ?? 0; ?></p>
                         </div>
                         <div class="bg-green-100 p-3 rounded-lg">
                             <svg
@@ -118,57 +131,36 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
             </div>
             <div class="card__content">
                 <div class="space-y-3" id="activeTrainsList">
+                    <?php foreach ($analytics['trains'] as $train) { ?>
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div>
-                            <p class="font-semibold">Express Northeast</p>
-                            <p class="text-sm text-gray-500">EX-101 • Express</p>
+                            <p class="font-semibold"><?php echo htmlspecialchars(
+                                $train['name'],
+                            ); ?></p>
+                            <p class="text-sm text-gray-500"><?php echo htmlspecialchars(
+                                $train['number'],
+                            ) .
+                                ' • ' .
+                                htmlspecialchars($train['type']); ?></p>
                         </div>
                         <div class="flex items-center gap-4">
                             <div class="text-right">
                                 <p class="text-sm text-gray-500">Current Location</p>
-                                <p class="font-medium">Central Station</p>
+                                <p class="font-medium"><?php echo htmlspecialchars(
+                                    $train['current_station_name'] ?? 'N/A',
+                                ); ?></p>
                             </div>
                             <div class="text-right">
                                 <p class="text-sm text-gray-500">Speed</p>
-                                <p class="font-medium">110 km/h</p>
+                                <p class="font-medium"><?php echo htmlspecialchars(
+                                    $train['speed'],
+                                ) . ' km/h'; ?></p>
                             </div>
-                            <span class="badge badge--success"> ON TIME </span>
+                            <span class="badge <?php echo $badgeClasses[$train['status']] ??
+                                ''; ?>"> <?php echo htmlspecialchars($train['status']); ?> </span>
                         </div>
                     </div>
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                            <p class="font-semibold">Local Commuter</p>
-                            <p class="text-sm text-gray-500">LC-205 • Local</p>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="text-right">
-                                <p class="text-sm text-gray-500">Current Location</p>
-                                <p class="font-medium">Penn Station</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm text-gray-500">Speed</p>
-                                <p class="font-medium">65 km/h</p>
-                            </div>
-                            <span class="badge badge--warning"> DELAYED </span>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                            <p class="font-semibold">Passenger Special</p>
-                            <p class="text-sm text-gray-500">PAS-405 • Passenger</p>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="text-right">
-                                <p class="text-sm text-gray-500">Current Location</p>
-                                <p class="font-medium">Gateway Station</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm text-gray-500">Speed</p>
-                                <p class="font-medium">0 km/h</p>
-                            </div>
-                            <span class="badge badge--error"> STOPPED </span>
-                        </div>
-                    </div>
+                        <?php } ?>
                 </div>
             </div>
         </div>

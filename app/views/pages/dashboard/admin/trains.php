@@ -25,72 +25,87 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
         </div>
 
         <div class="grid gap-4" id="trainsContainer">
-            <div class="card">
+            <?php foreach ($trains as $train) { ?>
+            <div class="card" data-train-id="<?php echo htmlspecialchars($train['id']); ?>">
                 <div class="card__content p-6">
                     <div class="flex items-start justify-between mb-4">
                         <div>
                             <div class="flex items-center gap-3 mb-1">
-                                <h3 class="text-lg font-semibold">Express Northeast</h3>
-                                <span class="badge badge--outline">Express</span>
-                                <span class="badge badge--green">ON TIME</span>
+                                <h3 class="text-lg font-semibold"><?php echo htmlspecialchars(
+                                    $train['name'],
+                                ); ?></h3>
+                                <span class="badge badge--outline"><?php echo htmlspecialchars(
+                                    $train['type'],
+                                ); ?></span>
+                                <span class="badge badge--green"><?php echo htmlspecialchars(
+                                    strtoupper($train['status']),
+                                ); ?></span>
                             </div>
-                            <p class="text-sm text-gray-500">Train #EX-101</p>
+                            <p class="text-sm text-gray-500">Train #<?php echo htmlspecialchars(
+                                $train['number'],
+                            ); ?></p>
                         </div>
                         <div class="flex gap-2">
                             <button
                                 class="btn btn--ghost btn--icon"
+                          onClick="openEditTrainDialog(<?php echo htmlspecialchars(
+                              json_encode($train),
+                          ); ?>)"
+                            >
+                                <svg
+                                    class="h-4 w-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                    ></path>
+                                </svg>
+                            </button>
+                            <button
+                                class="btn btn--ghost btn--icon"
+                                onclick="deleteTrain(<?php echo htmlspecialchars($train['id']); ?>)"
+                            >
+                                <svg
+                                    class="h-4 w-4 text-red-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                    ></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="train-card__route mb-4">
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg
+                                class="h-4 w-4 text-green-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                ></path>
+                            </svg>
                           
-                            >
-                                <svg
-                                    class="h-4 w-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                    ></path>
-                                </svg>
-                            </button>
-                            <button
-                                class="btn btn--ghost btn--icon"
-                            >
-                                <svg
-                                    class="h-4 w-4 text-red-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                    ></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="train-card__route mb-4">
-                        <div class="flex items-center gap-2 text-sm">
-                            <svg
-                                class="h-4 w-4 text-green-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                ></path>
-                            </svg>
-                            <span class="font-medium">Central Station</span>
+                            <span class="font-medium"><?php echo htmlspecialchars(
+                                $train['start_station_name'],
+                            ); ?></span>
                             <svg
                                 class="h-4 w-4 text-gray-400"
                                 fill="none"
@@ -104,7 +119,8 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                                     d="M14 5l7 7m0 0l-7 7m7-7H3"
                                 ></path>
                             </svg>
-                            <span class="text-gray-500">2 stops</span>
+                            <span class="text-gray-500"><?php echo count($train['route']) -
+                                2; ?> stops</span>
                             <svg
                                 class="h-4 w-4 text-gray-400"
                                 fill="none"
@@ -131,33 +147,42 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
                                 ></path>
                             </svg>
-                            <span class="font-medium">South Station</span>
+                            <span class="font-medium"><?php echo htmlspecialchars(
+                                $train['end_station_name'],
+                            ); ?></span>
                         </div>
                     </div>
 
                     <div class="grid sm-grid-cols-4 gap-4 mb-4">
                         <div>
                             <p class="text-sm text-gray-500">Current Location</p>
-                            <p class="font-medium">Central Station</p>
+                            <p class="font-medium"><?php echo htmlspecialchars(
+                                $train['current_station_name'] ?? 'N/A',
+                            ); ?></p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Speed</p>
-                            <p class="font-medium">110 km/h</p>
+                            <p class="font-medium"><?php echo htmlspecialchars(
+                                $train['speed'],
+                            ); ?> km/h</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Next Station</p>
-                            <p class="font-medium">Penn Station</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">ETA</p>
-                            <p class="font-medium">09:30</p>
+                            <p class="font-medium"><?php echo htmlspecialchars(
+                                $train['route'][1]['station_name'] ?? 'N/A',
+                            ); ?></p>
                         </div>
                     </div>
 
                     <div class="train-card__status-buttons">
                         <span class="train-card__status-label">Update Status:</span>
                         <button
-                            class="btn btn--default btn--sm"
+                            class="btn <?php echo $train['status'] === 'on-time'
+                                ? 'btn--default'
+                                : 'btn--outline'; ?> btn--sm"
+                            onclick="updateStatus('<?php echo htmlspecialchars(
+                                $train['id'],
+                            ); ?>', 'on-time')"
                         >
                             <svg
                                 class="h-3 w-3 mr-1"
@@ -175,7 +200,12 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                             On Time
                         </button>
                         <button
-                            class="btn btn--outline btn--sm"
+                            class="btn <?php echo $train['status'] === 'delayed'
+                                ? 'btn--default'
+                                : 'btn--outline'; ?> btn--sm"
+                            onclick="updateStatus('<?php echo htmlspecialchars(
+                                $train['id'],
+                            ); ?>', 'delayed')"
                         >
                             <svg
                                 class="h-3 w-3 mr-1"
@@ -193,7 +223,12 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                             Delayed
                         </button>
                         <button
-                            class="btn btn--outline btn--sm"
+                            class="btn <?php echo $train['status'] === 'stopped'
+                                ? 'btn--default'
+                                : 'btn--outline'; ?> btn--sm"
+                            onclick="updateStatus('<?php echo htmlspecialchars(
+                                $train['id'],
+                            ); ?>', 'stopped')"
                         >
                             <svg
                                 class="h-3 w-3 mr-1"
@@ -213,570 +248,7 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                     </div>
                 </div>
             </div>
-            <div class="card">
-                <div class="card__content p-6">
-                    <div class="flex items-start justify-between mb-4">
-                        <div>
-                            <div class="flex items-center gap-3 mb-1">
-                                <h3 class="text-lg font-semibold">Local Commuter</h3>
-                                <span class="badge badge--outline">Local</span>
-                                <span class="badge badge--yellow">DELAYED</span>
-                            </div>
-                            <p class="text-sm text-gray-500">Train #LC-205</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button
-                                class="btn btn--ghost btn--icon"
-                              
-                            >
-                                <svg
-                                    class="h-4 w-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                    ></path>
-                                </svg>
-                            </button>
-                            <button
-                                class="btn btn--ghost btn--icon"
-                            >
-                                <svg
-                                    class="h-4 w-4 text-red-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                    ></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="train-card__route mb-4">
-                        <div class="flex items-center gap-2 text-sm">
-                            <svg
-                                class="h-4 w-4 text-green-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                ></path>
-                            </svg>
-                            <span class="font-medium">Penn Station</span>
-                            <svg
-                                class="h-4 w-4 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                ></path>
-                            </svg>
-                            <span class="text-gray-500">0 stops</span>
-                            <svg
-                                class="h-4 w-4 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                ></path>
-                            </svg>
-                            <svg
-                                class="h-4 w-4 text-red-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                ></path>
-                            </svg>
-                            <span class="font-medium">Central Station</span>
-                        </div>
-                    </div>
-
-                    <div class="grid sm-grid-cols-4 gap-4 mb-4">
-                        <div>
-                            <p class="text-sm text-gray-500">Current Location</p>
-                            <p class="font-medium">Penn Station</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Speed</p>
-                            <p class="font-medium">65 km/h</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Next Station</p>
-                            <p class="font-medium">Central Station</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">ETA</p>
-                            <p class="font-medium">12:10</p>
-                        </div>
-                    </div>
-
-                    <div class="train-card__status-buttons">
-                        <span class="train-card__status-label">Update Status:</span>
-                        <button
-                            class="btn btn--outline btn--sm"
-                        >
-                            <svg
-                                class="h-3 w-3 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                            </svg>
-                            On Time
-                        </button>
-                        <button
-                            class="btn btn--default btn--sm"
-                        >
-                            <svg
-                                class="h-3 w-3 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                            </svg>
-                            Delayed
-                        </button>
-                        <button
-                            class="btn btn--outline btn--sm"
-                        >
-                            <svg
-                                class="h-3 w-3 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                            </svg>
-                            Stopped
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card__content p-6">
-                    <div class="flex items-start justify-between mb-4">
-                        <div>
-                            <div class="flex items-center gap-3 mb-1">
-                                <h3 class="text-lg font-semibold">Super Fast Express</h3>
-                                <span class="badge badge--outline">Super Fast</span>
-                                <span class="badge badge--green">ON TIME</span>
-                            </div>
-                            <p class="text-sm text-gray-500">Train #SF-301</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button
-                                class="btn btn--ghost btn--icon"
-                            
-                            >
-                                <svg
-                                    class="h-4 w-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                    ></path>
-                                </svg>
-                            </button>
-                            <button
-                                class="btn btn--ghost btn--icon"
-                            >
-                                <svg
-                                    class="h-4 w-4 text-red-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                    ></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="train-card__route mb-4">
-                        <div class="flex items-center gap-2 text-sm">
-                            <svg
-                                class="h-4 w-4 text-green-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                ></path>
-                            </svg>
-                            <span class="font-medium">Union Terminal</span>
-                            <svg
-                                class="h-4 w-4 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                ></path>
-                            </svg>
-                            <span class="text-gray-500">0 stops</span>
-                            <svg
-                                class="h-4 w-4 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                ></path>
-                            </svg>
-                            <svg
-                                class="h-4 w-4 text-red-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                ></path>
-                            </svg>
-                            <span class="font-medium">Central Station</span>
-                        </div>
-                    </div>
-
-                    <div class="grid sm-grid-cols-4 gap-4 mb-4">
-                        <div>
-                            <p class="text-sm text-gray-500">Current Location</p>
-                            <p class="font-medium">Union Terminal</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Speed</p>
-                            <p class="font-medium">130 km/h</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Next Station</p>
-                            <p class="font-medium">Central Station</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">ETA</p>
-                            <p class="font-medium">19:00</p>
-                        </div>
-                    </div>
-
-                    <div class="train-card__status-buttons">
-                        <span class="train-card__status-label">Update Status:</span>
-                        <button
-                            class="btn btn--default btn--sm"
-                        >
-                            <svg
-                                class="h-3 w-3 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                            </svg>
-                            On Time
-                        </button>
-                        <button
-                            class="btn btn--outline btn--sm"
-                        >
-                            <svg
-                                class="h-3 w-3 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                            </svg>
-                            Delayed
-                        </button>
-                        <button
-                            class="btn btn--outline btn--sm"
-                        >
-                            <svg
-                                class="h-3 w-3 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                            </svg>
-                            Stopped
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card__content p-6">
-                    <div class="flex items-start justify-between mb-4">
-                        <div>
-                            <div class="flex items-center gap-3 mb-1">
-                                <h3 class="text-lg font-semibold">Passenger Special</h3>
-                                <span class="badge badge--outline">Passenger</span>
-                                <span class="badge badge--red">STOPPED</span>
-                            </div>
-                            <p class="text-sm text-gray-500">Train #PAS-405</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button
-                                class="btn btn--ghost btn--icon"
-                           
-                            >
-                                <svg
-                                    class="h-4 w-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                    ></path>
-                                </svg>
-                            </button>
-                            <button
-                                class="btn btn--ghost btn--icon"
-                            >
-                                <svg
-                                    class="h-4 w-4 text-red-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                    ></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="train-card__route mb-4">
-                        <div class="flex items-center gap-2 text-sm">
-                            <svg
-                                class="h-4 w-4 text-green-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                ></path>
-                            </svg>
-                            <span class="font-medium">Gateway Station</span>
-                            <svg
-                                class="h-4 w-4 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                ></path>
-                            </svg>
-                            <span class="text-gray-500">0 stops</span>
-                            <svg
-                                class="h-4 w-4 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                ></path>
-                            </svg>
-                            <svg
-                                class="h-4 w-4 text-red-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                ></path>
-                            </svg>
-                            <span class="font-medium">South Station</span>
-                        </div>
-                    </div>
-
-                    <div class="grid sm-grid-cols-4 gap-4 mb-4">
-                        <div>
-                            <p class="text-sm text-gray-500">Current Location</p>
-                            <p class="font-medium">Gateway Station</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Speed</p>
-                            <p class="font-medium">0 km/h</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Next Station</p>
-                            <p class="font-medium">South Station</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">ETA</p>
-                            <p class="font-medium">20:15</p>
-                        </div>
-                    </div>
-
-                    <div class="train-card__status-buttons">
-                        <span class="train-card__status-label">Update Status:</span>
-                        <button
-                            class="btn btn--outline btn--sm"
-                        >
-                            <svg
-                                class="h-3 w-3 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                            </svg>
-                            On Time
-                        </button>
-                        <button
-                            class="btn btn--outline btn--sm"
-                        >
-                            <svg
-                                class="h-3 w-3 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                            </svg>
-                            Delayed
-                        </button>
-                        <button
-                            class="btn btn--default btn--sm"
-                        >
-                            <svg
-                                class="h-3 w-3 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                            </svg>
-                            Stopped
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <?php } ?>
         </div>
     </div>
 </main>
@@ -810,34 +282,40 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                             <label class="label" for="trainNumber">Train Number *</label>
                             <input
                                 type="text"
+                                name="number"
                                 id="trainNumber"
                                 class="input"
                                 placeholder="EX-101"
                                 required
                             />
+                            <p class="text-sm text-red-600 mt-1" id="trainNumberError"></p>
                         </div>
                         <div class="form-group">
                             <label class="label" for="trainName">Train Name *</label>
                             <input
                                 type="text"
+                                name="name"
                                 id="trainName"
                                 class="input"
                                 placeholder="Express Northeast"
                                 required
                             />
+                            <p class="text-sm text-red-600 mt-1" id="trainNameError"></p>
                         </div>
                         <div class="form-group">
                             <label class="label" for="trainType">Type</label>
-                            <select id="trainType" class="input">
+                            <select id="trainType" name="type" class="input">
                                 <option value="Express">Express</option>
                                 <option value="Super Fast">Super Fast</option>
                                 <option value="Local">Local</option>
                                 <option value="Passenger">Passenger</option>
                             </select>
+                            <p class="text-sm text-red-600 mt-1" id="trainTypeError"></p>
                         </div>
                         <div class="form-group">
                             <label class="label" for="trainSpeed">Average Speed (km/h)</label>
-                            <input type="number" id="trainSpeed" class="input" value="80" min="1" />
+                            <input type="number" id="trainSpeed" name="speed" class="input" value="80" min="1" />
+                            <p class="text-sm text-red-600 mt-1" id="trainSpeedError"></p>
                         </div>
                     </div>
                 </div>
@@ -847,19 +325,20 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                     <div class="grid grid-cols-2 gap-4">
                         <div class="form-group">
                             <label class="label" for="startStation">Start Station *</label>
-                            <select id="startStation" class="input" required>
+                            <select id="startStation" name="start_station" class="input" required>
                                 <option value="">Select start station</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="label" for="endStation">Destination Station *</label>
-                            <select id="endStation" class="input" required>
+                            <select id="endStation" name="end_station" class="input" required>
                                 <option value="">Select destination</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="label" for="departureTime">Departure Time *</label>
-                            <input type="time" id="departureTime" class="input" required />
+                            <input type="datetime-local" name="departure_time" id="departureTime" class="input" required />
+                            <p class="text-sm text-red-600 mt-1" id="departureTimeError"></p>
                         </div>
                         <div class="form-group">
                             <label class="label" for="intermediateStation"
@@ -875,10 +354,13 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                         </div>
                     </div>
 
-                    <div id="selectedStationsContainer" class="hidden">
-                        <label class="label">Intermediate Stations (in order)</label>
-                        <div class="selected-stations" id="selectedStations"></div>
-                    </div>
+                  
+
+                    
+            <div id="selectedStationsContainer" class="hidden">
+              <label class="label">Intermediate Stations (in order)</label>
+              <div class="selected-stations" id="selectedStations"></div>
+            </div>
 
                
                 </div>
@@ -887,17 +369,14 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                     <h3 class="form-section__title">Generated Route Schedule</h3>
                     <div class="route-preview" id="routePreview"></div>
                     <div class="route-summary">
-                        <p class="route-summary__text" id="routeSummary"></p>
-                    </div>
+              <p class="route-summary__text" id="routeSummary"></p>
+            </div>
                 </div>
-            </form>
-        </div>
-
-        <div class="dialog__footer">
+                     <div class="dialog__footer">
             <button type="button" class="btn btn--outline" onclick="closeModal('trainDialog')">
                 Cancel
             </button>
-            <button type="button" class="btn btn--default">
+            <button type="submit" class="btn btn--default">
                 <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                         stroke-linecap="round"
@@ -909,8 +388,15 @@ include_once BASE_PATH . '/app/views/layouts/dashboard/header/admin.php';
                 <span id="saveButtonText">Save Train</span>
             </button>
         </div>
+            </form>
+        </div>
+
+   
     </div>
 </div>
 
+<script>
+    let allTrains = <?php echo json_encode($trains); ?>;
+</script>
 <script src="/assets/js/dashboard/admin/trains.js"></script>
 <?php include_once BASE_PATH . '/app/views/layouts/dashboard/footer.php'; ?>
