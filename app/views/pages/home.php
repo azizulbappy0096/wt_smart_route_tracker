@@ -4,7 +4,12 @@ $metadata = [
     'styles' => ['/assets/css/home.css'],
 ];
 include_once BASE_PATH . '/app/views/layouts/general/header.php';
+
+$user = SessionMiddleware::getCurrentUser();
+
+echo '<script>console.log(' . json_encode($user) . ');</script>';
 ?>
+
 
 <main class="hero-gradient">
   <header class="bg-white shadow-sm">

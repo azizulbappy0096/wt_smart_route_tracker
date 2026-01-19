@@ -22,3 +22,9 @@ const routes = [
     '/dashboard/admin/users' => ['dashboard/AdminController', 'manageUsersView'],
     '/dashboard/admin/reports' => ['dashboard/AdminController', 'manageReportsView'],
 ];
+
+const apiRoutes = [
+    '/api/auth/register' => ['AuthApiController', 'register', 'post'],
+    '/api/auth/login' => ['AuthApiController', 'login', 'post'],
+    '/api/auth/logout' => ['AuthApiController', 'logout', 'get'],
+];

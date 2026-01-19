@@ -2,15 +2,11 @@
 /**
  * Controller for Home page
  */
-require BASE_PATH . '/core/Controller.php';
+require_once BASE_PATH . '/core/Controller.php';
 
 class HomeController extends Controller
 {
-
-    function __construct()
-    {
-
-    }
+    function __construct() {}
 
     public function index()
     {

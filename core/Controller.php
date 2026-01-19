@@ -28,4 +28,13 @@ class Controller
 
         echo $content;
     }
+
+    protected function pass($success, $status, $arg = [])
+    {
+        return [
+            'success' => $success,
+            'status' => $status,
+            ...$arg,
+        ];
+    }
 }
