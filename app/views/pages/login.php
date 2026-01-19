@@ -38,6 +38,7 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
               </svg>
               <input type="email" id="email" class="input pl-10" placeholder="user@traintracker.com" required>
             </div>
+            <p id="emailError" class="text-red-600 text-sm mt-1"></p>
           </div>
 
           <div class="form-group">
@@ -51,6 +52,7 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
               </svg>
               <input type="password" id="password" class="input pl-10" placeholder="••••••••" required>
             </div>
+            <p id="passwordError" class="text-red-600 text-sm mt-1"></p>
           </div>
 
           <button type="submit" class="btn btn--default btn--full" id="submitBtn">Sign In</button>
@@ -64,5 +66,66 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
     </div>
   </div>
 </main>
+
+<script>
+  const form = document.getElementById('loginForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const emailError = document.getElementById('emailError');
+  const passwordError = document.getElementById('passwordError');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+        let errors = {
+        email: false,
+        password: false,
+        confirmPassword: false,
+    }
+
+    if(/^\S+@\S+\.\S+$/.test(email) === false) {
+        emailError.textContent = 'Please enter a valid email address';
+        errors.email = true;
+    }
+
+    if (!password) {
+        passwordError.textContent = 'Password is required';
+        errors.password = true;
+    }
+
+    if (errors.email || errors.password) {
+        return;
+    }
+    
+    submitBtn.textContent = 'Signing in...';
+    submitBtn.disabled = true;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/auth/login', true);
+    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            const response = JSON.parse(xhr.responseText);
+            const data = response.data || null;
+            
+            if(response.success) {
+                showToast("Login successful! Redirecting...", "success");
+               if (data && data.user_type === 'admin') {
+                    window.location.href = '/dashboard/admin';
+                } else {
+                    window.location.href = '/dashboard';
+                }
+                return;
+            }
+            showToast(response.message, "error");
+            submitBtn.textContent = 'Sign In';
+            submitBtn.disabled = false;
+        }
+    }
+    xhr.send(JSON.stringify({ email, password }));
+  });
+</script>
 
 <?php include_once BASE_PATH . '/app/views/layouts/general/footer.php'; ?>

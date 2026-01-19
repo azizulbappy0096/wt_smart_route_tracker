@@ -67,10 +67,46 @@ class AuthModel extends Model
         }
     }
 
+    public function changePassword($userId, $currentPassword, $newPassword)
+    {
+        try {
+            $sql = "SELECT password FROM {$this->table} WHERE id = :id LIMIT 1";
+            $params = [
+                ':id' => $userId,
+            ];
+            $stmt = $this->query($sql, $params);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$user || !password_verify($currentPassword, $user['password'])) {
+                return $this->pass(false, 'UNAUTHORIZED', [
+                    'message' => 'Current password is incorrect.',
+                    'errors' => [
+                        'current_password' => 'Current password is incorrect.',
+                    ],
+                ]);
+            }
+
+            // Update to new password
+            $hashedNewPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+            $updateSql = "UPDATE {$this->table} SET password = :password WHERE id = :id";
+            $updateParams = [
+                ':password' => $hashedNewPassword,
+                ':id' => $userId,
+            ];
+            $this->query($updateSql, $updateParams);
+
+            return $this->pass(true, 'SUCCESS', [
+                'message' => 'Password updated successfully.',
+            ]);
+        } catch (PDOException $e) {
+            return $this->handleException($e);
+        }
+    }
+
     public function getById($id)
     {
         try {
-            $sql = "SELECT id, full_name, email, user_type 
+            $sql = "SELECT id, full_name, email, phone, profile_picture, user_type 
                 FROM {$this->table} WHERE id = :id LIMIT 1";
             $params = [
                 ':id' => $id,
@@ -85,10 +121,60 @@ class AuthModel extends Model
             }
 
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
             return $this->pass(true, 'SUCCESS', [
                 'message' => 'User retrieved successfully.',
                 'data' => $user,
+            ]);
+        } catch (PDOException $e) {
+            return $this->handleException($e);
+        }
+    }
+
+    public function updateProfile($id, $fullName, $email, $phone)
+    {
+        try {
+            $sql = "UPDATE {$this->table} 
+                SET full_name = :full_name, email = :email, phone = :phone
+                WHERE id = :id";
+            $params = [
+                ':full_name' => $fullName,
+                ':email' => $email,
+                ':phone' => $phone,
+                ':id' => $id,
+            ];
+            $this->query($sql, $params);
+
+            return $this->pass(true, 'SUCCESS', [
+                'message' => 'Profile updated successfully.',
+            ]);
+        } catch (PDOException $e) {
+            if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
+                return $this->pass(false, 'CONFLICT', [
+                    'message' => 'Email already exists.',
+                    'errors' => [
+                        'email' => 'Email already exists.',
+                    ],
+                ]);
+            }
+
+            return $this->handleException($e);
+        }
+    }
+
+    public function updateProfilePicture($id, $profilePicturePath)
+    {
+        try {
+            $sql = "UPDATE {$this->table} 
+                SET profile_picture = :profile_picture
+                WHERE id = :id";
+            $params = [
+                ':profile_picture' => $profilePicturePath,
+                ':id' => $id,
+            ];
+            $this->query($sql, $params);
+
+            return $this->pass(true, 'SUCCESS', [
+                'message' => 'Profile picture updated successfully.',
             ]);
         } catch (PDOException $e) {
             return $this->handleException($e);

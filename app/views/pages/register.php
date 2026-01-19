@@ -48,6 +48,7 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
               </svg>
               <input type="email" id="email" class="input pl-10" placeholder="you@example.com" required>
             </div>
+            <p id="emailError" class="text-red-600 text-sm mt-1"></p>
           </div>
 
           <div class="form-group">
@@ -58,6 +59,7 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
               </svg>
               <input type="password" id="password" class="input pl-10" placeholder="••••••••" required>
             </div>
+            <p id="passwordError" class="text-red-600 text-sm mt-1"></p>
           </div>
 
           <div class="form-group">
@@ -68,6 +70,7 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
               </svg>
               <input type="password" id="confirmPassword" class="input pl-10" placeholder="••••••••" required>
             </div>
+            <p id="confirmPasswordError" class="text-red-600 text-sm mt-1"></p>
           </div>
 
           <button type="submit" class="btn btn--default btn--full" id="submitBtn">Create Account</button>
@@ -82,4 +85,69 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
   </div>
 </main>
 
+<script>
+const form = document.getElementById('registerForm');
+const submitBtn = document.getElementById('submitBtn');
+const emailError = document.getElementById('emailError');
+const passwordError = document.getElementById('passwordError');
+const confirmPasswordError = document.getElementById('confirmPasswordError');
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    let errors = {
+        email: false,
+        password: false,
+        confirmPassword: false,
+    }
+
+    if(/^\S+@\S+\.\S+$/.test(email) === false) {
+        emailError.textContent = 'Please enter a valid email address';
+        errors.email = true;
+    }
+
+    if (password !== confirmPassword) {
+        confirmPasswordError.textContent = 'Passwords do not match';
+        errors.confirmPassword = true;
+    }
+
+    if (password.length < 6) {
+        passwordError.textContent = 'Password must be at least 6 characters';
+        errors.password = true;
+    }
+
+    if (errors.email || errors.password || errors.confirmPassword) {
+        return;
+    }
+
+    submitBtn.textContent = 'Creating account...';
+    submitBtn.disabled = true;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/auth/register', true);
+    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            const response = JSON.parse(xhr.responseText);
+            const data = response.data || null;
+            
+            if(response.success) {
+                showToast("Registration successful! Redirecting...", "success");
+                window.location.href = '/login';
+                return;
+            }
+            showToast(response.message, "error");
+            submitBtn.textContent = 'Create Account';
+            submitBtn.disabled = false;
+        }
+    }
+    xhr.send(JSON.stringify({ full_name: name, email, password }));
+});
+
+</script>
 <?php include_once BASE_PATH . '/app/views/layouts/general/footer.php'; ?>

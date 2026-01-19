@@ -28,6 +28,8 @@ class SessionMiddleware
                 'id' => $user['data']['id'],
                 'full_name' => $user['data']['full_name'],
                 'email' => $user['data']['email'],
+                'phone' => $user['data']['phone'] ?? '',
+                'profile_picture' => $user['data']['profile_picture'] ?? '',
                 'user_type' => $user['data']['user_type'],
             ];
             $_SESSION['is_logged_in'] = true;
@@ -46,9 +48,11 @@ class SessionMiddleware
 
         return [
             'id' => $_SESSION['user']['id'] ?? 0,
-            'name' => $_SESSION['user']['full_name'] ?? '',
+            'full_name' => $_SESSION['user']['full_name'] ?? '',
             'email' => $_SESSION['user']['email'] ?? '',
-            'type' => $_SESSION['user']['user_type'] ?? 'user',
+            'phone' => $_SESSION['user']['phone'] ?? '',
+            'profile_picture' => $_SESSION['user']['profile_picture'] ?? '',
+            'user_type' => $_SESSION['user']['user_type'] ?? 'user',
             'is_logged_in' => $_SESSION['is_logged_in'] ?? false,
         ];
     }

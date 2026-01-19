@@ -746,7 +746,9 @@ svg {
 .w-12 {
     width: 3rem;
 }
-
+.h-full {
+    height: 100%;
+}
 .h-3 {
     height: 0.75rem;
 }

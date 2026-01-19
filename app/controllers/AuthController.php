@@ -104,6 +104,16 @@ class AuthController extends Controller
         ]);
     }
 
+    public function changePassword($userId, $currentPassword, $newPassword)
+    {
+        if (empty($userId)) {
+            return $this->pass(false, 'VALIDATION_FAILED', [
+                'message' => 'Invalid user ID',
+            ]);
+        }
+        return $this->model->changePassword($userId, $currentPassword, $newPassword);
+    }
+
     public function getById($id)
     {
         if (empty($id)) {
@@ -112,5 +122,61 @@ class AuthController extends Controller
             ]);
         }
         return $this->model->getById($id);
+    }
+
+    public function updateProfile($id, $fullName, $email, $phone)
+    {
+        if (empty($id)) {
+            return $this->pass(false, 'VALIDATION_FAILED', [
+                'message' => 'Invalid user ID',
+            ]);
+        }
+        return $this->model->updateProfile($id, $fullName, $email, $phone);
+    }
+
+    public function updateProfilePicture($id, $fileTmpPath, $fileName, $fileSize, $fileType)
+    {
+        if (empty($id)) {
+            return $this->pass(false, 'VALIDATION_FAILED', [
+                'message' => 'Invalid user ID',
+            ]);
+        }
+
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        if (!in_array($fileExtension, $allowedExtensions)) {
+            return $this->pass(false, 'INVALID_FILE_TYPE', [
+                'message' => 'Invalid file type. Only JPG, JPEG, PNG, GIF are allowed.',
+                'errors' => [
+                    'profile_picture' => 'Invalid file type.',
+                ],
+            ]);
+        }
+        if ($fileSize > 2 * 1024 * 1024) {
+            return $this->pass(false, 'FILE_TOO_LARGE', [
+                'message' => 'File size exceeds 2MB limit.',
+                'errors' => [
+                    'profile_picture' => 'File size exceeds limit.',
+                ],
+            ]);
+        }
+        $uploadDir = BASE_PATH . '/assets/uploads/';
+        $newFileName = 'profile_picture_' . time() . '.' . $fileExtension;
+        $destPath = $uploadDir . $newFileName;
+
+        if (!move_uploaded_file($fileTmpPath, $destPath)) {
+            return $this->pass(false, 'UPLOAD_FAILED', [
+                'message' => 'Failed to upload profile picture.',
+                'errors' => [
+                    'profile_picture' => 'Upload failed.',
+                ],
+            ]);
+        }
+
+        $result = $this->model->updateProfilePicture($id, '/assets/uploads/' . $newFileName);
+        $result['data'] = [
+            'profile_picture' => '/assets/uploads/' . $newFileName,
+        ];
+        return $result;
     }
 }

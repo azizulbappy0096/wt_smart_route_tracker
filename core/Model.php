@@ -30,6 +30,8 @@ class Model
                 full_name VARCHAR(100) NOT NULL,
                 email VARCHAR(100) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
+                phone VARCHAR(20),
+                profile_picture VARCHAR(255),
                 user_type ENUM('admin', 'user') NOT NULL DEFAULT 'user',
                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP );

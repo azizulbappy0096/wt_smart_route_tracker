@@ -2,6 +2,73 @@
 $metadata['title'] = 'Dashboard - Profile | Smart Route Tracker';
 $metadata['styles'] = ['/assets/css/dashboard.css'];
 include_once BASE_PATH . '/app/views/layouts/general/header.php';
+
+$user = SessionMiddleware::getCurrentUser();
+$errors;
+$message;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once BASE_PATH . '/app/controllers/AuthController.php';
+
+    if (isset($_POST['form_name']) && $_POST['form_name'] === 'profile') {
+        $fullName = trim($_POST['full_name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+
+        $authController = new AuthController();
+        $response = $authController->updateProfile($user['id'], $fullName, $email, $phone);
+        $message = $response['message'] ?? '';
+
+        if ($response['success']) {
+            $_SESSION['user']['full_name'] = $fullName;
+            $_SESSION['user']['email'] = $email;
+            $_SESSION['user']['phone'] = $phone;
+
+            $user = SessionMiddleware::getCurrentUser();
+        } else {
+            $errors = $response['errors'] ?? [];
+        }
+    } elseif (isset($_POST['form_name']) && $_POST['form_name'] === 'security') {
+        $currentPassword = $_POST['current_password'] ?? '';
+        $newPassword = $_POST['new_password'] ?? '';
+
+        $authController = new AuthController();
+        $response = $authController->changePassword($user['id'], $currentPassword, $newPassword);
+        $message = $response['message'] ?? '';
+
+        if (!$response['success']) {
+            $errors = $response['errors'] ?? [];
+        }
+    } elseif (isset($_POST['form_name']) && $_POST['form_name'] === 'profile_picture') {
+        require_once BASE_PATH . '/app/controllers/AuthController.php';
+        $authController = new AuthController();
+
+        if (isset($_FILES['profile_picture'])) {
+            $fileTmpPath = $_FILES['profile_picture']['tmp_name'];
+            $fileName = $_FILES['profile_picture']['name'];
+            $fileSize = $_FILES['profile_picture']['size'];
+            $fileType = $_FILES['profile_picture']['type'];
+
+            $response = $authController->updateProfilePicture(
+                $user['id'],
+                $fileTmpPath,
+                $fileName,
+                $fileSize,
+                $fileType,
+            );
+            $message = $response['message'] ?? '';
+
+            if ($response['success']) {
+                $_SESSION['user']['profile_picture'] = $response['data']['profile_picture'] ?? '';
+                $user = SessionMiddleware::getCurrentUser();
+            } else {
+                $errors = $response['errors'] ?? [];
+            }
+        } else {
+            $message = 'No file uploaded or there was an upload error.';
+        }
+    }
+}
 ?>
 <style>
     .tabs {
@@ -55,12 +122,21 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
       justify-content: center;
       font-size: 1.5rem;
       font-weight: 600;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .profile-avatar img {
+        height: 100%;
+        object-fit: cover;
     }
 </style>
 
 <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
     <div class="container py-4">
-        <a href="/dashboard" class="btn btn--ghost">
+        <a href="<?php echo $user['user_type'] === 'admin'
+            ? '/dashboard/admin'
+            : '/dashboard'; ?>" class="btn btn--ghost">
             <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                     stroke-linecap="round"
@@ -79,12 +155,37 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
         <div class="card">
             <div class="card__content p-6">
                 <div class="flex items-center gap-6">
-                    <div class="profile-avatar" id="profileAvatar">AB</div>
+                    <form enctype="multipart/form-data" id="profilePictureForm" action="<?php echo $_SERVER[
+                        'REQUEST_URI'
+                    ]; ?>" method="POST">
+                    <div class="profile-avatar" id="profileAvatar"><?php if (
+                        !empty($user['profile_picture'])
+                    ) {
+                        echo '<img src="' . $user['profile_picture'] . '" alt="Profile Picture" />';
+                    } else {
+                        echo strtoupper(
+                            implode(
+                                '',
+                                array_map(
+                                    fn($name) => $name[0],
+                                    explode(' ', $user['full_name'] ?? ''),
+                                ),
+                            ),
+                        );
+                    } ?>
+                </div>
+                   <input type="file" name="profile_picture" id="profile_picture" hidden />
+                    <input type="hidden" name="form_name" value="profile_picture">
+                </form>
                     <div>
-                        <h1 class="text-2xl font-bold" id="profileName">Azizul Bappy</h1>
-                        <p class="text-gray-500" id="profileEmail">user@gmail.com</p>
+                        <h1 class="text-2xl font-bold" id="profileName"><?php echo $user[
+                            'full_name'
+                        ]; ?></h1>
+                        <p class="text-gray-500" id="profileEmail"><?php echo $user['email']; ?></p>
                         <p class="text-sm text-gray-400 mt-1">
-                            Account Type: <span id="profileType">User</span>
+                            Account Type: <span id="profileType"><?php echo $user[
+                                'user_type'
+                            ]; ?></span>
                         </p>
                     </div>
                 </div>
@@ -108,9 +209,11 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
                         <p class="card__description">Update your personal information</p>
                     </div>
                     <div class="card__content">
-                        <form id="profileForm" class="space-y-4">
+                        <form action="<?php echo $_SERVER[
+                            'REQUEST_URI'
+                        ]; ?>" method="POST" id="profileForm" class="space-y-4">
                             <div class="form-group">
-                                <label class="label" for="name">Full Name</label>
+                                <label class="label" for="full_name">Full Name</label>
                                 <div class="input-group">
                                     <svg
                                         class="input-group__icon"
@@ -125,8 +228,13 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                                         />
                                     </svg>
-                                    <input type="text" id="name" class="input pl-10" required />
+                                    <input type="text" name="full_name" id="full_name" class="input pl-10" value="<?php echo $user[
+                                        'full_name'
+                                    ]; ?>" required />
                                 </div>
+                                <p class="text-sm text-red-600 mt-1" id="nameError">
+                                    <?php echo $errors['full_name'] ?? ''; ?>
+                                </p>
                             </div>
 
                             <div class="form-group">
@@ -145,8 +253,13 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
                                             d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                                         />
                                     </svg>
-                                    <input type="email" id="email" class="input pl-10" required />
+                                    <input type="email" name="email" id="email" value="<?php echo $user[
+                                        'email'
+                                    ]; ?>" class="input pl-10" required />
                                 </div>
+                                <p class="text-sm text-red-600 mt-1" id="emailError">
+                                    <?php echo $errors['email'] ?? ''; ?>
+                                </p>
                             </div>
 
                             <div class="form-group">
@@ -167,13 +280,18 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
                                     </svg>
                                     <input
                                         type="tel"
+                                        name="phone"
                                         id="phone"
+                                        value="<?php echo $user['phone']; ?>"
                                         class="input pl-10"
                                         placeholder="+1234567890"
                                     />
                                 </div>
+                                <p class="text-sm text-red-600 mt-1" id="phoneError">
+                                    <?php echo $errors['phone'] ?? ''; ?>
+                                </p>
                             </div>
-
+                            <input type="hidden" name="form_name" value="profile">
                             <button type="submit" class="btn btn--default btn--full">
                                 <svg
                                     class="h-4 w-4 mr-2"
@@ -205,7 +323,9 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
                         </p>
                     </div>
                     <div class="card__content">
-                        <form id="passwordForm" class="space-y-4">
+                        <form action="<?php echo $_SERVER[
+                            'REQUEST_URI'
+                        ]; ?>" method="POST" id="passwordForm" class="space-y-4">
                             <div class="form-group">
                                 <label class="label" for="currentPassword">Current Password</label>
                                 <div class="input-group">
@@ -223,6 +343,7 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
                                         />
                                     </svg>
                                     <input
+                                        name="current_password"
                                         type="password"
                                         id="currentPassword"
                                         class="input pl-10"
@@ -248,6 +369,7 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
                                         />
                                     </svg>
                                     <input
+                                        name="new_password"
                                         type="password"
                                         id="newPassword"
                                         class="input pl-10"
@@ -276,13 +398,14 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
                                     </svg>
                                     <input
                                         type="password"
+                                        name="confirm_new_password"
                                         id="confirmNewPassword"
                                         class="input pl-10"
                                         required
                                     />
                                 </div>
                             </div>
-
+                            <input type="hidden" name="form_name" value="security">
                             <button type="submit" class="btn btn--default btn--full">
                                 <svg
                                     class="h-4 w-4 mr-2"
@@ -306,6 +429,16 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
         </div>
     </div>
 </main>
+
+<script>
+    <?php if (isset($message) && !empty($message)) { ?>
+        showToast("<?php echo $message; ?>", "<?php echo $response['success']
+    ? 'success'
+    : 'error'; ?>");
+    <?php } ?>
+
+    const user = <?php echo json_encode($user); ?>;
+</script>
 
 <script src="/assets/js/dashboard/profile.js"></script>
 <?php include_once BASE_PATH . '/app/views/layouts/general/footer.php'; ?>

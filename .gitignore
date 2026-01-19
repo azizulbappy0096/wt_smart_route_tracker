@@ -3,3 +3,4 @@ node_modules
 design.txt
 package*.json
 .prettierrc.json
+/assets/uploads/

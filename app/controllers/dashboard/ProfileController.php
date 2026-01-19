@@ -1,6 +1,6 @@
 <?php
 
-require BASE_PATH . '/core/Controller.php';
+require_once BASE_PATH . '/core/Controller.php';
 
 class ProfileController extends Controller
 {

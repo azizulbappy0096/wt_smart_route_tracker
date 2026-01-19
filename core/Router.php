@@ -28,10 +28,35 @@ class Router
             $route = routes[$this->request];
             $controller = $route[0];
             $method = $route[1];
-            $allowedMethod = 'GET';
 
-            // Check HTTP method
-            $this->checkMethod($allowedMethod);
+            if (strpos($this->request, '/dashboard') === 0) {
+                if (!isset($_SESSION['user'])) {
+                    header('Location: /login');
+                    exit();
+                }
+            }
+
+            if (
+                $this->request === '/login' ||
+                $this->request === '/register' ||
+                $this->request === '/forgot-password'
+            ) {
+                if (isset($_SESSION['user'])) {
+                    header('Location: /dashboard');
+                    exit();
+                }
+            }
+
+            if (
+                $this->request === '/dashboard/admin' ||
+                strpos($this->request, '/dashboard/admin/') === 0
+            ) {
+                $this->protectedRoute('admin');
+            }
+
+            if ($this->request === '/dashboard/notifications') {
+                $this->protectedRoute('user');
+            }
 
             $filePath = BASE_PATH . '/app/controllers/' . $controller . '.php';
 
@@ -89,6 +114,15 @@ class Router
                 'data' => null,
             ];
             echo json_encode($response);
+            exit();
+        }
+    }
+
+    private function protectedRoute($requiredUserType)
+    {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['user_type'] !== $requiredUserType) {
+            http_response_code(403);
+            include BASE_PATH . '/app/views/pages/forbidden.php';
             exit();
         }
     }
