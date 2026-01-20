@@ -28,6 +28,13 @@ class AuthController extends Controller
         $this->loadView('forgot_password.php');
     }
 
+    public function getAllUsers()
+    {
+        $result = $this->model->getAllUsers();
+
+        return $result;
+    }
+
     // actions
     public function register($fullName, $email, $password, $userType = 'user')
     {

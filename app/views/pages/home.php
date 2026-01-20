@@ -17,8 +17,14 @@ include_once BASE_PATH . '/app/views/layouts/general/header.php';
         <h1 class="text-2xl font-bold text-gray-900">Smart Route Tracker</h1>
       </a>
       <div class="flex gap-3">
+        <?php if (isset($_SESSION['user'])) { ?>
+          <a href="<?php echo $_SESSION['user']['user_type'] === 'admin'
+              ? '/dashboard/admin'
+              : '/dashboard'; ?>" class="btn btn--default">Dashboard</a>
+        <?php } else { ?>
         <a href="/login" class="btn btn--ghost">Login</a>
         <a href="/register" class="btn btn--default">Get Started</a>
+        <?php } ?>
       </div>
     </div>
   </header>

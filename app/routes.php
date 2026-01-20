@@ -41,4 +41,6 @@ const apiRoutes = [
     // favorites
     '/api/favorites/toggle' => ['FavoritesApiController', 'toggleFavorite', 'post'],
     '/api/favorites/user' => ['FavoritesApiController', 'getUserFavorites', 'get'],
+    // reports
+    '/api/reports/remove' => ['ReportApiController', 'removeReport', 'delete'],
 ];

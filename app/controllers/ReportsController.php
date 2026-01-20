@@ -53,4 +53,18 @@ class ReportsController extends Controller
 
         return $result;
     }
+
+    public function getAllReports()
+    {
+        $result = $this->model->getAllReports();
+
+        return $result;
+    }
+
+    public function removeReport($reportId)
+    {
+        $result = $this->model->removeReport($reportId);
+
+        return $result;
+    }
 }

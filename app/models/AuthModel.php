@@ -8,6 +8,22 @@ class AuthModel extends Model
         $this->table = $table;
     }
 
+    public function getAllUsers()
+    {
+        try {
+            $sql = "SELECT id, full_name, email, phone, profile_picture, user_type, created_at FROM {$this->table}";
+            $stmt = $this->query($sql);
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $this->pass(true, 'SUCCESS', [
+                'message' => 'Users retrieved successfully.',
+                'data' => $users,
+            ]);
+        } catch (PDOException $e) {
+            return $this->handleException($e);
+        }
+    }
+
     public function register($fullName, $email, $password, $userType = 'user')
     {
         try {

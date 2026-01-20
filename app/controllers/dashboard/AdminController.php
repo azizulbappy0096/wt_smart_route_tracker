@@ -2,6 +2,8 @@
 
 require_once BASE_PATH . '/core/Controller.php';
 require_once BASE_PATH . '/app/models/TrainModel.php';
+require_once BASE_PATH . '/app/models/AuthModel.php';
+require_once BASE_PATH . '/app/models/ReportsModel.php';
 
 class AdminController extends Controller
 {
@@ -30,10 +32,22 @@ class AdminController extends Controller
     }
     public function manageUsersView()
     {
-        $this->loadView('dashboard/admin/users.php');
+        $authModel = new AuthModel();
+        $result = $authModel->getAllUsers();
+        $users = $result['data'] ?? [];
+
+        $this->loadView('dashboard/admin/users.php', ['users' => $users]);
     }
     public function manageReportsView()
     {
-        $this->loadView('dashboard/admin/reports.php');
+        $reportModel = new ReportsModel();
+        $result = $reportModel->getAllReports();
+
+        $stats = $reportModel->getReportStats();
+
+        $this->loadView('dashboard/admin/reports.php', [
+            'reports' => $result['data'] ?? [],
+            'stats' => $stats['data'] ?? [],
+        ]);
     }
 }
