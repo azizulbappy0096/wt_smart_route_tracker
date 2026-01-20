@@ -1,15 +1,13 @@
 <?php
-/**
- * Controller for Home page
- */
+
 require_once BASE_PATH . '/core/Controller.php';
 
-class HomeController extends Controller
+class ProfileController extends Controller
 {
     function __construct() {}
 
     public function index()
     {
-        $this->loadView('home.php');
+        $this->loadView('dashboard/profile.php');
     }
 }

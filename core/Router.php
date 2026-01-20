@@ -1,27 +1,136 @@
 <?php
 
+require BASE_PATH . '/app/routes.php';
+
 class Router
 {
-    public static function route()
+    private $request;
+    private $requestMethod;
+
+    public function __construct()
     {
-        require BASE_PATH . '/app/routes.php';
+        $this->request = parse_url(trim($_SERVER['REQUEST_URI']), PHP_URL_PATH);
+        $this->requestMethod = $_SERVER['REQUEST_METHOD'];
+    }
 
-        $request = trim($_SERVER['REQUEST_URI']);
+    public function run()
+    {
+        if (strpos($this->request, '/api/') === 0) {
+            $this->apiRoute();
+        } else {
+            $this->route();
+        }
+    }
 
-        if (array_key_exists($request, routes)) {
-            $controller = routes[$request][0];
-            $method = routes[$request][1];
-            if (file_exists(BASE_PATH . '/app/controllers/' . $controller . '.php')) {
-                require BASE_PATH . '/app/controllers/' . $controller . '.php';
-                $class = new $controller();
+    private function route()
+    {
+        if (array_key_exists($this->request, routes)) {
+            $route = routes[$this->request];
+            $controller = $route[0];
+            $method = $route[1];
+
+            if (strpos($this->request, '/dashboard') === 0) {
+                if (!isset($_SESSION['user'])) {
+                    header('Location: /login');
+                    exit();
+                }
+            }
+
+            if (
+                $this->request === '/login' ||
+                $this->request === '/register' ||
+                $this->request === '/forgot-password'
+            ) {
+                if (isset($_SESSION['user'])) {
+                    header('Location: /dashboard');
+                    exit();
+                }
+            }
+
+            if (
+                $this->request === '/dashboard/admin' ||
+                strpos($this->request, '/dashboard/admin/') === 0
+            ) {
+                $this->protectedRoute('admin');
+            }
+
+            if ($this->request === '/dashboard/notifications') {
+                $this->protectedRoute('user');
+            }
+
+            $filePath = BASE_PATH . '/app/controllers/' . $controller . '.php';
+
+            if (file_exists($filePath)) {
+                require_once $filePath;
+                $controller = explode('/', $controller)[count(explode('/', $controller)) - 1];
+                $class = new $controller($this->request);
                 if (method_exists($controller, $method)) {
                     $class->$method();
-                    exit();
+                    return;
                 }
             }
         }
 
         http_response_code(404);
         include BASE_PATH . '/app/views/pages/not_found.php';
+    }
+
+    private function apiRoute()
+    {
+        if (array_key_exists($this->request, apiRoutes)) {
+            $route = apiRoutes[$this->request];
+            $controller = $route[0];
+            $method = $route[1];
+            $allowedMethod = strtoupper($route[2] ?? 'GET');
+
+            // Check HTTP method
+            $this->checkMethod($allowedMethod);
+
+            $filePath = BASE_PATH . '/app/api/' . $controller . '.php';
+
+            if (file_exists($filePath)) {
+                require_once $filePath;
+                $controller = explode('/', $controller)[count(explode('/', $controller)) - 1];
+                $class = new $controller();
+                if (method_exists($controller, $method)) {
+                    $class->$method();
+                    return;
+                }
+            }
+        }
+
+        header('Content-Type: application/json');
+        http_response_code(404);
+        $response = [
+            'success' => false,
+            'status' => 404,
+            'message' => 'API endpoint not found.',
+        ];
+        echo json_encode($response);
+    }
+
+    private function checkMethod($allowedMethod)
+    {
+        if ($this->requestMethod !== $allowedMethod) {
+            header('Content-Type: application/json');
+            http_response_code(405);
+            $response = [
+                'success' => false,
+                'status' => 405,
+                'message' => "Method $this->requestMethod not allowed.",
+                'data' => null,
+            ];
+            echo json_encode($response);
+            exit();
+        }
+    }
+
+    private function protectedRoute($requiredUserType)
+    {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['user_type'] !== $requiredUserType) {
+            http_response_code(403);
+            include BASE_PATH . '/app/views/pages/forbidden.php';
+            exit();
+        }
     }
 }
