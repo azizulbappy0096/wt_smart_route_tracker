@@ -169,6 +169,14 @@ svg {
     width: 100%;
 }
 
+.uppercase {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.capitalize {
+    text-transform: capitalize;
+}
+
 .card {
     background-color: var(--card);
     color: var(--card-foreground);

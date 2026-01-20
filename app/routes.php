@@ -37,4 +37,8 @@ const apiRoutes = [
     '/api/trains/update' => ['TrainApiController', 'updateTrain', 'put'],
     '/api/trains/delete' => ['TrainApiController', 'deleteTrain', 'delete'],
     '/api/trains/status' => ['TrainApiController', 'updateTrainStatus', 'put'],
+    '/api/trains/move-next' => ['TrainApiController', 'moveTrainToNextStation', 'get'],
+    // favorites
+    '/api/favorites/toggle' => ['FavoritesApiController', 'toggleFavorite', 'post'],
+    '/api/favorites/user' => ['FavoritesApiController', 'getUserFavorites', 'get'],
 ];

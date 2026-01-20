@@ -47,7 +47,6 @@ class RouteModel extends Model
             ];
             $this->query($deleteSql, $deleteParams);
 
-            // Then, insert new routes
             foreach ($routes as $route) {
                 $this->addRoute(
                     $trainId,
@@ -86,7 +85,6 @@ class RouteModel extends Model
             $stmt = $this->query($sql, $params);
             $routes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Optional: Identify which stop is the start and which is the end
             if (!empty($routes)) {
                 $routes[0]['is_start'] = true;
                 $routes[count($routes) - 1]['is_end'] = true;

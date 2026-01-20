@@ -22,5 +22,3 @@ userMenuTrigger.addEventListener('click', () => {
         true,
     );
 });
-
-function toggleDropdown(dropdownId) {}

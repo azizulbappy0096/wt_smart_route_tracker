@@ -86,4 +86,12 @@ class TrainApiController extends ApiController
         $result = $this->controller->updateTrainStatus($id, $status);
         $this->jsonResponse($result);
     }
+
+    public function moveTrainToNextStation()
+    {
+        $id = $_GET['id'] ?? '';
+
+        $result = $this->controller->moveTrainToNextStation($id);
+        $this->jsonResponse($result);
+    }
 }

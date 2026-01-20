@@ -21,6 +21,20 @@ class TrainController extends Controller
         $this->loadView('dashboard/admin/trains.php', ['trains' => $trains]);
     }
 
+    public function getAllTrains()
+    {
+        $result = $this->model->getAllTrains();
+
+        return $result;
+    }
+
+    public function searchTrains($query = null, $station = null, $type = null)
+    {
+        $result = $this->model->searchTrains($query, $station, $type);
+
+        return $result;
+    }
+
     public function addTrain($name, $number, $type, $speed, $start_station, $end_station, $route)
     {
         $errors = [];
@@ -128,5 +142,26 @@ class TrainController extends Controller
         }
 
         return $this->model->updateTrainStatus($id, $status);
+    }
+
+    public function getTrainById($id)
+    {
+        if (empty($id) || !is_numeric($id)) {
+            return $this->pass(false, 'VALIDATION_FAILED', [
+                'message' => 'Valid train ID is required.',
+            ]);
+        }
+        return $this->model->getTrainById($id);
+    }
+
+    public function moveTrainToNextStation($trainId)
+    {
+        if (empty($trainId) || !is_numeric($trainId)) {
+            return $this->pass(false, 'VALIDATION_FAILED', [
+                'message' => 'Valid train ID is required.',
+            ]);
+        }
+
+        return $this->model->moveTrainToNextStation($trainId);
     }
 }

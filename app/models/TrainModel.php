@@ -10,6 +10,67 @@ class TrainModel extends Model
         $this->table = $table;
     }
 
+    public function moveTrainToNextStation($trainId)
+    {
+        try {
+            $trainResult = $this->getTrainById($trainId);
+            if (!$trainResult['success']) {
+                return $trainResult;
+            }
+            $train = $trainResult['data'];
+
+            $routeModel = new RouteModel();
+            $routeResult = $routeModel->getRoutesByTrain($trainId);
+            if (!$routeResult['success']) {
+                return $routeResult;
+            }
+            $route = $routeResult['data'] ?? [];
+
+            $currentStationIndex = null;
+            foreach ($route as $index => $routeEntry) {
+                if ($routeEntry['station_id'] == $train['current_station']) {
+                    $currentStationIndex = $index;
+                    break;
+                }
+            }
+
+            if ($currentStationIndex === null) {
+                $newStationId = $route[0]['station_id'];
+                $sql = "UPDATE {$this->table} SET current_station = :current_station WHERE id = :id";
+                $params = [
+                    ':id' => $trainId,
+                    ':current_station' => $newStationId,
+                ];
+                $stmt = $this->query($sql, $params);
+                return $this->pass(true, 'SUCCESS', [
+                    'message' => 'Train moved to the first station in the route.',
+                ]);
+            }
+
+            $nextStationIndex = $currentStationIndex + 1;
+            if ($nextStationIndex >= count($route)) {
+                return $this->pass(false, 'SUCCESS', [
+                    'message' => 'Train has reached the end of its route.',
+                ]);
+            }
+
+            $newStationId = $route[$nextStationIndex]['station_id'];
+
+            $sql = "UPDATE {$this->table} SET current_station = :current_station WHERE id = :id";
+            $params = [
+                ':id' => $trainId,
+                ':current_station' => $newStationId,
+            ];
+            $stmt = $this->query($sql, $params);
+
+            return $this->pass(true, 'SUCCESS', [
+                'message' => 'Train moved successfully.',
+            ]);
+        } catch (PDOException $e) {
+            return $this->handleException($e);
+        }
+    }
+
     public function analytics()
     {
         try {
@@ -111,16 +172,86 @@ FROM trains;";
         ]);
     }
 
-    public function getTrainById($trainId)
+    public function searchTrains($query = null, $station = null, $type = null)
     {
         try {
-            // We join the stations table three times using aliases: curr, start, and end
             $sql = "SELECT 
                     t.*, 
                     curr.name as current_station_name, curr.code as current_station_code,
                     st.name as start_station_name, st.code as start_station_code,
                     en.name as end_station_name, en.code as end_station_code
                 FROM trains t
+                LEFT JOIN stations curr ON t.current_station = curr.id
+                LEFT JOIN stations st ON t.start_station = st.id
+                LEFT JOIN stations en ON t.end_station = en.id";
+
+            $whereClauses = [];
+            $params = [];
+
+            if (!empty($query)) {
+                $whereClauses[] = '(t.name LIKE :query OR t.number LIKE :query)';
+                $params[':query'] = "%$query%";
+            }
+            if (!empty($station)) {
+                $whereClauses[] = 't.current_station = :station';
+                $params[':station'] = $station;
+            }
+            if (!empty($type) && $type !== 'all') {
+                $whereClauses[] = 't.type = :type';
+                $params[':type'] = $type;
+            }
+
+            if (count($whereClauses) > 0) {
+                $sql .= ' WHERE ' . implode(' AND ', $whereClauses);
+            }
+
+            $sql .= ' ORDER BY t.created_at DESC';
+
+            $stmt = $this->query($sql, $params);
+            $trains = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $routeModel = new RouteModel();
+            foreach ($trains as &$train) {
+                $routeResult = $routeModel->getRoutesByTrain($train['id']);
+                $routes = $routeResult['data'] ?? [];
+                $train['route'] = $routes;
+
+                $train['next_station_name'] = 'N/A';
+                $train['next_arrival_time'] = null;
+
+                foreach ($routes as $index => $stop) {
+                    if ($stop['station_id'] == $train['current_station']) {
+                        if (isset($routes[$index + 1])) {
+                            $nextStop = $routes[$index + 1];
+                            $train['next_station_name'] = $nextStop['station_name'];
+                            $train['next_arrival_time'] = $nextStop['arrival_time'];
+                        } else {
+                            $train['next_station_name'] = 'Arrived';
+                            $train['next_arrival_time'] = $stop['arrival_time'];
+                        }
+                        break;
+                    }
+                }
+            }
+
+            return $this->pass(true, 'SUCCESS', [
+                'message' => 'Trains fetched successfully.',
+                'data' => $trains,
+            ]);
+        } catch (PDOException $e) {
+            return $this->handleException($e);
+        }
+    }
+
+    public function getTrainById($trainId)
+    {
+        try {
+            $sql = "SELECT 
+                    t.*, 
+                    curr.name as current_station_name, curr.code as current_station_code,
+                    st.name as start_station_name, st.code as start_station_code,
+                    en.name as end_station_name, en.code as end_station_code
+                FROM {$this->table} t
                 LEFT JOIN stations curr ON t.current_station = curr.id
                 LEFT JOIN stations st ON t.start_station = st.id
                 LEFT JOIN stations en ON t.end_station = en.id
@@ -135,7 +266,22 @@ FROM trains;";
 
             $routeModel = new RouteModel();
             $routeResult = $routeModel->getRoutesByTrain($trainId);
-            $train['route'] = $routeResult['data'] ?? [];
+            $routes = $routeResult['data'] ?? [];
+            $train['route'] = $routes;
+
+            $train['next_station_name'] = 'N/A';
+            $train['next_arrival_time'] = null;
+
+            foreach ($routes as $index => $stop) {
+                if ($stop['station_id'] == $train['current_station']) {
+                    if (isset($routes[$index + 1])) {
+                        $nextStop = $routes[$index + 1];
+                        $train['next_station_name'] = $nextStop['station_name'];
+                        $train['next_arrival_time'] = $nextStop['arrival_time'];
+                    }
+                    break;
+                }
+            }
 
             return $this->pass(true, 'SUCCESS', [
                 'message' => 'Train fetched successfully.',

@@ -100,14 +100,17 @@ CREATE TABLE IF NOT EXISTS alerts (
 CREATE TABLE IF NOT EXISTS reports (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     reported_by INT UNSIGNED NOT NULL,
-    category ENUM('Platform', 'Cleanliness', 'Safety', 'Ticket', 'Other') NOT NULL,
+    issueTrain INT UNSIGNED DEFAULT NULL,
+    category ENUM('delay', 'cancellation', 'technical', 'safety', 'other') NOT NULL,
+    title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     status ENUM('open', 'in-progress', 'resolved', 'closed') NOT NULL DEFAULT 'open',
     priority ENUM('low', 'medium', 'high', 'critical') NOT NULL DEFAULT 'medium',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     resolved_at TIMESTAMP NULL,
-    FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (issueTrain) REFERENCES trains(id) ON DELETE SET NULL
 );",
             // favorites
             "
