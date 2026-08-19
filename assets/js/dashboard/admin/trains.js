@@ -214,7 +214,7 @@ function openEditTrainDialog(train) {
     editingTrainId = train.id;
     document.getElementById('dialogTitle').textContent = 'Edit Train';
     document.getElementById('saveButtonText').textContent = 'Update Train';
-    console.log(train);
+
     document.getElementById('trainNumber').value = train.number;
     document.getElementById('trainName').value = train.name;
     document.getElementById('trainType').value = train.type;
@@ -294,6 +294,7 @@ function saveTrain() {
     }
 
     const trainData = {
+        id: editingTrainId,
         name: trainName,
         number: trainNumber,
         type: trainType,
