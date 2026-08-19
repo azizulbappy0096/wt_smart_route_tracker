@@ -324,7 +324,7 @@ FROM trains;";
 
             return $this->pass(true, 'SUCCESS', [
                 'message' => 'Train updated successfully.',
-                'data' => $train,
+                'data' => $train['data'],
             ]);
         } catch (PDOException $e) {
             return $this->handleException($e);
